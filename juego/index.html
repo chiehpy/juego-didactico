@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<title>Separa Residuos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Lilita+One&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CSS VARIABLES
+   ============================================================ */
+:root {
+  --bg-primary: #0f1b2d;
+  --bg-gradient-start: #162544;
+  --bg-gradient-mid: #0f1b2d;
+  --bg-gradient-end: #0a1220;
+
+  --accent-green: #34d399;
+  --accent-lime: #a3e635;
+  --accent-sky: #38bdf8;
+
+  --bin-blue: #3b82f6;
+  --bin-blue-dark: #2563eb;
+  --bin-yellow: #eab308;
+  --bin-yellow-dark: #ca8a04;
+  --bin-green: #22c55e;
+  --bin-green-dark: #16a34a;
+  --bin-black: #4b5563;
+  --bin-black-dark: #1f2937;
+
+  --text-primary: #f0f9ff;
+  --text-secondary: #7dd3fc;
+  --text-muted: #38bdf8aa;
+
+  --token-bg: rgba(255,255,255,0.07);
+  --token-border: rgba(255,255,255,0.12);
+
+  --font-display: 'Lilita One', cursive;
+  --font-body: 'Outfit', sans-serif;
+
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-xl: 40px;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  touch-action: none;
+}
+
+body {
+  display: flex; justify-content: center; align-items: center;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(56,189,248,0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(52,211,153,0.06) 0%, transparent 50%),
+    linear-gradient(170deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 40%, var(--bg-gradient-end) 100%);
+}
+
+/* ============================================================
+   GAME WRAPPER
+   ============================================================ */
+#game-wrapper {
+  width: 100%; max-width: 540px;
+  height: 100vh; max-height: 960px;
+  position: relative; overflow: hidden;
+  padding: 0 24px;
+}
+@media (min-height: 961px) {
+  #game-wrapper { max-height: 100vh; }
+}
+/* Totem full-res: more generous margins */
+@media (min-width: 1080px) {
+  #game-wrapper { max-width: 900px; padding: 0 80px; }
+}
+@media (min-width: 1080px) and (min-height: 1920px) {
+  #game-wrapper { max-width: 1080px; padding: 0 100px; }
+}
+
+/* ============================================================
+   SCREENS
+   ============================================================ */
+.screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 40px 24px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.screen.active { opacity: 1; pointer-events: all; }
+
+/* ============================================================
+   PARTICLES
+   ============================================================ */
+.particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.particle { position: absolute; border-radius: 50%; opacity: 0.1; animation: floatP linear infinite; }
+@keyframes floatP {
+  0% { transform: translateY(100vh) rotate(0deg) scale(0.5); opacity: 0; }
+  10% { opacity: 0.1; } 90% { opacity: 0.1; }
+  100% { transform: translateY(-20vh) rotate(360deg) scale(1); opacity: 0; }
+}
+
+/* ============================================================
+   START SCREEN
+   ============================================================ */
+.start-logo { position: relative; z-index: 1; margin-bottom: 12px; }
+
+.start-icon {
+  width: 100px; height: 100px; margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 64px;
+  background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(52,211,153,0.15));
+  border-radius: 50%;
+  box-shadow: 0 0 40px rgba(56,189,248,0.2);
+  animation: iconBob 3s ease-in-out infinite;
+}
+@keyframes iconBob {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.start-title {
+  font-family: var(--font-display); font-size: clamp(44px, 11vw, 60px);
+  text-align: center; line-height: 1; letter-spacing: -1px;
+  background: linear-gradient(135deg, #fff 0%, var(--accent-sky) 50%, var(--accent-green) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 4px 20px rgba(56,189,248,0.3)); margin-bottom: 4px;
+}
+.start-subtitle {
+  font-family: var(--font-display); font-size: clamp(20px, 5vw, 26px);
+  color: var(--text-secondary); letter-spacing: 6px; text-transform: uppercase;
+  text-align: center; opacity: 0.7; margin-bottom: 32px;
+}
+.start-instructions {
+  font-size: 18px; color: var(--text-muted); text-align: center;
+  max-width: 340px; line-height: 1.7; margin-bottom: 48px; z-index: 1; position: relative;
+}
+.start-instructions strong { color: var(--accent-sky); font-weight: 600; }
+
+.btn-play {
+  position: relative; z-index: 1; width: 240px; height: 76px; border: none;
+  border-radius: var(--radius-xl); font-family: var(--font-display); font-size: 32px;
+  letter-spacing: 2px; color: #fff;
+  background: linear-gradient(135deg, var(--accent-sky) 0%, var(--accent-green) 100%);
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(56,189,248,0.4), 0 0 60px rgba(56,189,248,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: pulseBtn 2.5s ease-in-out infinite;
+}
+.btn-play:active { transform: scale(0.95); box-shadow: 0 2px 12px rgba(56,189,248,0.3); }
+@keyframes pulseBtn {
+  0%, 100% { box-shadow: 0 4px 24px rgba(56,189,248,0.4), 0 0 60px rgba(56,189,248,0.15); }
+  50% { box-shadow: 0 4px 32px rgba(56,189,248,0.6), 0 0 80px rgba(56,189,248,0.25); }
+}
+
+/* ============================================================
+   GAME SCREEN
+   ============================================================ */
+#screen-game { justify-content: flex-start; padding: 20px 0 20px; }
+
+.game-hud {
+  width: 100%; display: flex; justify-content: space-between; align-items: center;
+  padding: 0 4px; margin-bottom: 10px; z-index: 10;
+}
+.hud-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.hud-label { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 600; }
+.hud-value { font-family: var(--font-display); font-size: 38px; line-height: 1; color: var(--text-primary); }
+.hud-value.timer { color: var(--accent-sky); transition: color 0.3s; }
+.hud-value.timer.warning { color: #f59e0b; }
+.hud-value.timer.danger { color: #ef4444; animation: timerPulse 0.5s ease-in-out infinite; }
+@keyframes timerPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+.hud-value.score { color: var(--accent-green); }
+
+.progress-bar-track {
+  width: 100%; height: 8px; background: rgba(255,255,255,0.06);
+  border-radius: 4px; margin-bottom: 12px; overflow: hidden; z-index: 10;
+}
+.progress-bar-fill {
+  height: 100%; background: linear-gradient(90deg, var(--accent-sky), var(--accent-green));
+  border-radius: 4px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 0 12px rgba(56,189,248,0.5);
+}
+
+/* Token area */
+.token-area {
+  flex: 1; width: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative; z-index: 5; min-height: 0;
+}
+
+/* Waste token */
+.waste-token {
+  width: clamp(200px, 50vw, 340px); height: clamp(200px, 50vw, 340px);
+  background: var(--token-bg); border: 2.5px solid var(--token-border);
+  border-radius: var(--radius-lg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  cursor: grab; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  position: relative; z-index: 50;
+}
+.waste-token:active { cursor: grabbing; }
+.waste-token.dragging {
+  transform: scale(1.08);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 30px rgba(56,189,248,0.2);
+  border-color: var(--accent-sky); z-index: 100;
+}
+.waste-token .token-emoji { font-size: clamp(64px, 16vw, 80px); line-height: 1; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+.waste-token .token-name { font-size: clamp(17px, 4.5vw, 22px); font-weight: 700; text-align: center; color: var(--text-primary); padding: 0 12px; line-height: 1.3; }
+.waste-token .token-hint { font-size: clamp(13px, 3.5vw, 16px); color: var(--text-muted); font-weight: 400; }
+
+.waste-token.enter { animation: tokenEnter 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+@keyframes tokenEnter { 0%{opacity:0;transform:scale(0.5) translateY(30px)} 100%{opacity:1;transform:scale(1) translateY(0)} }
+
+.waste-token.correct-exit { animation: correctExit 0.5s cubic-bezier(0.4,0,0.2,1) forwards; }
+@keyframes correctExit { 0%{opacity:1;transform:scale(1)} 50%{transform:scale(1.15)} 100%{opacity:0;transform:scale(0.3)} }
+
+.waste-token.wrong-exit { animation: wrongExit 0.5s cubic-bezier(0.4,0,0.2,1) forwards; }
+@keyframes wrongExit {
+  0%{opacity:1;transform:translateX(0)} 15%{transform:translateX(-20px)} 30%{transform:translateX(18px)}
+  45%{transform:translateX(-14px)} 60%{transform:translateX(10px)} 100%{opacity:0;transform:translateX(0) scale(0.5)}
+}
+
+/* Feedback flash */
+.feedback-flash { position:absolute; inset:0; border-radius:var(--radius-lg); pointer-events:none; opacity:0; z-index:200; }
+.feedback-flash.correct { background:radial-gradient(circle at center,rgba(52,211,153,0.35) 0%,transparent 70%); animation:flashIn 0.6s ease-out forwards; }
+.feedback-flash.wrong { background:radial-gradient(circle at center,rgba(239,68,68,0.35) 0%,transparent 70%); animation:flashIn 0.6s ease-out forwards; }
+@keyframes flashIn { 0%{opacity:1;transform:scale(0.5)} 100%{opacity:0;transform:scale(2.5)} }
+
+/* Score popup */
+.score-popup { position:absolute; font-family:var(--font-display); font-size:52px; pointer-events:none; z-index:300; animation:scoreFloat 0.8s cubic-bezier(0.4,0,0.2,1) forwards; }
+.score-popup.positive { color:var(--accent-green); text-shadow:0 0 20px rgba(52,211,153,0.6); }
+.score-popup.negative { color:#ef4444; text-shadow:0 0 20px rgba(239,68,68,0.6); }
+@keyframes scoreFloat { 0%{opacity:1;transform:translateY(0) scale(0.5)} 30%{transform:translateY(-20px) scale(1.2)} 100%{opacity:0;transform:translateY(-80px) scale(0.8)} }
+
+/* ============================================================
+   CONTAINERS (TRASH BINS)
+   ============================================================ */
+.containers-area { width: 100%; z-index: 10; padding-top: 8px; min-height: 15vh; display: flex; align-items: center; justify-content: center; }
+
+.containers-row {
+  display: flex; justify-content: center; gap: 10px; margin-bottom: 0;
+}
+
+.container-bin {
+  flex: 1; max-width: 23%;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 16px 6px 14px;
+  border-radius: var(--radius-md);
+  border: 2.5px solid transparent;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  position: relative; cursor: default;
+}
+
+.container-bin .bin-img {
+  width: clamp(80px, 10vh, 140px); height: auto; transition: transform 0.2s;
+  pointer-events: none;
+}
+
+/* Color filters: base image is green */
+.bin-blue .bin-img { filter: hue-rotate(60deg) saturate(1.5) brightness(1.1); }
+.bin-yellow .bin-img { filter: saturate(0) sepia(1) hue-rotate(15deg) saturate(5) brightness(1.3); }
+.bin-green .bin-img { filter: none; }
+.bin-black .bin-img { filter: saturate(0) brightness(0.7); }
+
+.container-bin .bin-label {
+  font-size: clamp(12px, 1.5vh, 16px); font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; text-align: center; line-height: 1.2;
+}
+
+/* Bin color themes */
+.bin-blue { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.2); }
+.bin-yellow { background: rgba(234,179,8,0.08); border-color: rgba(234,179,8,0.2); }
+.bin-green { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.2); }
+.bin-black { background: rgba(75,85,99,0.12); border-color: rgba(75,85,99,0.25); }
+.container-bin .bin-label { color: #ffffff; }
+
+/* Drag over */
+.container-bin.drag-over { transform: scale(1.1); }
+.container-bin.drag-over.bin-blue { border-color: var(--bin-blue); box-shadow: 0 0 28px rgba(59,130,246,0.4); }
+.container-bin.drag-over.bin-yellow { border-color: var(--bin-yellow); box-shadow: 0 0 28px rgba(234,179,8,0.4); }
+.container-bin.drag-over.bin-green { border-color: var(--bin-green); box-shadow: 0 0 28px rgba(34,197,94,0.4); }
+.container-bin.drag-over.bin-black { border-color: var(--bin-black); box-shadow: 0 0 28px rgba(75,85,99,0.4); }
+
+.container-bin.correct-flash { animation: binCorrect 0.5s ease-out; }
+@keyframes binCorrect { 0%{transform:scale(1)} 30%{transform:scale(1.15)} 100%{transform:scale(1)} }
+
+.container-bin.wrong-flash { animation: binWrong 0.4s ease-out; }
+@keyframes binWrong { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+
+/* ============================================================
+   RESULTS SCREEN
+   ============================================================ */
+#screen-results { gap: 20px; }
+
+.results-icon {
+  width: 110px; height: 110px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 58px; margin-bottom: 8px;
+  animation: resultsBounce 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; opacity: 0;
+}
+.results-icon.excellent { background: linear-gradient(135deg,rgba(52,211,153,0.2),rgba(163,230,53,0.2)); box-shadow:0 0 40px rgba(52,211,153,0.3); }
+.results-icon.good { background: linear-gradient(135deg,rgba(56,189,248,0.2),rgba(52,211,153,0.2)); box-shadow:0 0 40px rgba(56,189,248,0.3); }
+.results-icon.try-again { background: linear-gradient(135deg,rgba(245,158,11,0.2),rgba(234,179,8,0.2)); box-shadow:0 0 40px rgba(245,158,11,0.3); }
+@keyframes resultsBounce { 0%{opacity:0;transform:scale(0)} 60%{transform:scale(1.15)} 100%{opacity:1;transform:scale(1)} }
+
+.results-title {
+  font-family: var(--font-display); font-size: clamp(34px,8vw,48px);
+  text-align: center; animation: rSlide 0.5s cubic-bezier(0.4,0,0.2,1) 0.15s forwards; opacity: 0;
+}
+@keyframes rSlide { 0%{opacity:0;transform:translateY(20px)} 100%{opacity:1;transform:translateY(0)} }
+
+.results-message {
+  font-size: 18px; color: var(--text-muted); text-align: center;
+  max-width: 300px; line-height: 1.5;
+  animation: rSlide 0.5s cubic-bezier(0.4,0,0.2,1) 0.25s forwards; opacity: 0;
+}
+
+.results-stats {
+  display: flex; gap: 20px;
+  animation: rSlide 0.5s cubic-bezier(0.4,0,0.2,1) 0.35s forwards; opacity: 0;
+}
+
+.stat-card {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 16px 22px; background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-md);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.stat-value { font-family: var(--font-display); font-size: 38px; line-height: 1; }
+.stat-value.green { color: var(--accent-green); }
+.stat-value.red { color: #ef4444; }
+.stat-value.blue { color: #60a5fa; }
+.stat-label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+.btn-replay {
+  width: 240px; height: 68px; border: 2.5px solid var(--accent-sky);
+  border-radius: var(--radius-xl); background: transparent;
+  font-family: var(--font-display); font-size: 24px; letter-spacing: 1px;
+  color: var(--accent-sky); cursor: pointer; transition: all 0.25s;
+  animation: rSlide 0.5s cubic-bezier(0.4,0,0.2,1) 0.5s forwards; opacity: 0; margin-top: 12px;
+}
+.btn-replay:active { background: var(--accent-sky); color: var(--bg-primary); transform: scale(0.95); }
+
+/* Drag ghost */
+.drag-ghost { position: fixed; pointer-events: none; z-index: 9999; transition: none; }
+
+/* Utilities */
+.hidden { display: none !important; }
+a, button, .container-bin { touch-action: manipulation; }
+.waste-token { touch-action: none; }
+</style>
+</head>
+<body>
+
+<div id="game-wrapper">
+  <div class="particles" id="particles"></div>
+
+  <!-- ======================== START SCREEN ======================== -->
+  <div class="screen active" id="screen-start">
+    <div class="start-logo">
+      <div class="start-icon">♻️</div>
+    </div>
+    <h1 class="start-title">SEPARA</h1>
+    <p class="start-subtitle">Residuos</p>
+    <p class="start-instructions">
+      <strong>Arrastra</strong> cada residuo al tacho del color correcto.<br>
+      ¡Clasifica todos antes de que se acabe el tiempo!
+    </p>
+    <button class="btn-play" onclick="startGame()">¡JUGAR!</button>
+  </div>
+
+  <!-- ======================== GAME SCREEN ======================== -->
+  <div class="screen" id="screen-game">
+    <div class="game-hud">
+      <div class="hud-item">
+        <span class="hud-label">Tiempo</span>
+        <span class="hud-value timer" id="hud-timer">60</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Fichas</span>
+        <span class="hud-value" id="hud-tokens">0/20</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Puntaje</span>
+        <span class="hud-value score" id="hud-score">0</span>
+      </div>
+    </div>
+
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+
+    <div class="token-area" id="token-area"></div>
+
+    <!-- 4 TACHOS -->
+    <div class="containers-area">
+      <div class="containers-row">
+
+        <!-- AZUL - Papel y Cartón -->
+        <div class="container-bin bin-blue" data-category="paper">
+          <img class="bin-img" src="bin.png" alt="Papel y Cartón">
+          <span class="bin-label">Papel y<br>Cartón</span>
+        </div>
+
+        <!-- AMARILLO - Plásticos y Latas -->
+        <div class="container-bin bin-yellow" data-category="plastic">
+          <img class="bin-img" src="bin.png" alt="Plásticos y Latas">
+          <span class="bin-label">Plásticos<br>y Latas</span>
+        </div>
+
+        <!-- VERDE - Vidrio -->
+        <div class="container-bin bin-green" data-category="glass">
+          <img class="bin-img" src="bin.png" alt="Vidrio">
+          <span class="bin-label">Vidrio</span>
+        </div>
+
+        <!-- NEGRO - No Reciclable -->
+        <div class="container-bin bin-black" data-category="trash">
+          <img class="bin-img" src="bin.png" alt="No Reciclable">
+          <span class="bin-label">No<br>Reciclable</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== RESULTS SCREEN ======================== -->
+  <div class="screen" id="screen-results">
+    <div class="results-icon" id="results-icon"></div>
+    <h2 class="results-title" id="results-title"></h2>
+    <p class="results-message" id="results-message"></p>
+    <div class="results-stats">
+      <div class="stat-card">
+        <span class="stat-value green" id="stat-correct">0</span>
+        <span class="stat-label">Aciertos</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value red" id="stat-wrong">0</span>
+        <span class="stat-label">Errores</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value blue" id="stat-score">0</span>
+        <span class="stat-label">Puntaje</span>
+      </div>
+    </div>
+    <button class="btn-replay" onclick="startGame()">¡JUGAR DE NUEVO!</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIGURATION
+   ============================================================ */
+const CONFIG = {
+  totalTokens: 20,
+  gameTime: 60,
+  correctPoints: 1,
+  penaltyPoints: -1,
+};
+
+/* ============================================================
+   WASTE DATA - 4 categories (kid-friendly items)
+   ============================================================ */
+const WASTE_ITEMS = [
+  // AZUL - Papel y Cartón
+  { name: 'Periódico',           emoji: '📰', category: 'paper' },
+  { name: 'Caja de cartón',      emoji: '📦', category: 'paper' },
+  { name: 'Hoja de papel',       emoji: '📄', category: 'paper' },
+  { name: 'Revista',             emoji: '📖', category: 'paper' },
+  { name: 'Rollo de cartón',     emoji: '🧻', category: 'paper' },
+  { name: 'Cuaderno viejo',      emoji: '📓', category: 'paper' },
+  { name: 'Sobre de carta',      emoji: '✉️', category: 'paper' },
+
+  // AMARILLO - Plásticos y Latas
+  { name: 'Botella plástica',    emoji: '🧴', category: 'plastic' },
+  { name: 'Lata de gaseosa',     emoji: '🥫', category: 'plastic' },
+  { name: 'Bolsa plástica',      emoji: '🛍️', category: 'plastic' },
+  { name: 'Envase de yogurt',    emoji: '🥛', category: 'plastic' },
+  { name: 'Tapa plástica',       emoji: '⚙️', category: 'plastic' },
+  { name: 'Envase de shampoo',   emoji: '🧴', category: 'plastic' },
+  { name: 'Lata de atún',        emoji: '🥫', category: 'plastic' },
+
+  // VERDE - Vidrio
+  { name: 'Botella de vidrio',   emoji: '🍾', category: 'glass' },
+  { name: 'Frasco de mermelada', emoji: '🫙', category: 'glass' },
+  { name: 'Vaso de vidrio roto', emoji: '🥃', category: 'glass' },
+  { name: 'Botella de jugo',     emoji: '🍶', category: 'glass' },
+  { name: 'Frasco de salsa',     emoji: '🫙', category: 'glass' },
+
+  // NEGRO - No Reciclable
+  { name: 'Pañal usado',         emoji: '🧷', category: 'trash' },
+  { name: 'Chicle masticado',    emoji: '🫧', category: 'trash' },
+  { name: 'Servilleta sucia',    emoji: '🧻', category: 'trash' },
+  { name: 'Esponja vieja',       emoji: '🧽', category: 'trash' },
+  { name: 'Cepillo de dientes',  emoji: '🪥', category: 'trash' },
+  { name: 'Sticker pegado',      emoji: '🏷️', category: 'trash' },
+  { name: 'Globo desinflado',    emoji: '🎈', category: 'trash' },
+];
+
+/* ============================================================
+   GAME STATE
+   ============================================================ */
+let state = {
+  tokens: [], currentIndex: 0, score: 0, correct: 0, wrong: 0,
+  timeLeft: CONFIG.gameTime, timerInterval: null, isPlaying: false,
+  isDragging: false, dragOffsetX: 0, dragOffsetY: 0, activeGhost: null,
+};
+
+/* ============================================================
+   DOM REFERENCES
+   ============================================================ */
+const $screens = {
+  start: document.getElementById('screen-start'),
+  game: document.getElementById('screen-game'),
+  results: document.getElementById('screen-results'),
+};
+const $hud = {
+  timer: document.getElementById('hud-timer'),
+  tokens: document.getElementById('hud-tokens'),
+  score: document.getElementById('hud-score'),
+};
+const $tokenArea = document.getElementById('token-area');
+const $progressFill = document.getElementById('progress-fill');
+const $containers = document.querySelectorAll('.container-bin');
+
+/* ============================================================
+   PARTICLES
+   ============================================================ */
+(function createParticles() {
+  const c = document.getElementById('particles');
+  const colors = ['#38bdf8','#34d399','#a3e635','#3b82f6','#eab308','#22c55e'];
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const s = 6 + Math.random() * 20;
+    p.style.width = s+'px'; p.style.height = s+'px';
+    p.style.left = Math.random()*100+'%';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.animationDuration = (12+Math.random()*18)+'s';
+    p.style.animationDelay = (Math.random()*15)+'s';
+    c.appendChild(p);
+  }
+})();
+
+/* ============================================================
+   SCREEN MANAGEMENT
+   ============================================================ */
+function showScreen(name) {
+  Object.values($screens).forEach(s => s.classList.remove('active'));
+  $screens[name].classList.add('active');
+}
+
+/* ============================================================
+   SHUFFLE & SELECT
+   ============================================================ */
+function selectTokens() {
+  const shuffled = [...WASTE_ITEMS].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, CONFIG.totalTokens);
+}
+
+/* ============================================================
+   START GAME
+   ============================================================ */
+function startGame() {
+  state.tokens = selectTokens();
+  state.currentIndex = 0;
+  state.score = 0; state.correct = 0; state.wrong = 0;
+  state.timeLeft = CONFIG.gameTime; state.isPlaying = true;
+  updateHUD(); showScreen('game');
+  setTimeout(() => { renderToken(); startTimer(); }, 300);
+}
+
+/* ============================================================
+   TIMER
+   ============================================================ */
+function startTimer() {
+  clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    updateTimerDisplay();
+    if (state.timeLeft <= 0) endGame();
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  $hud.timer.textContent = state.timeLeft;
+  $hud.timer.classList.remove('warning','danger');
+  if (state.timeLeft <= 5) $hud.timer.classList.add('danger');
+  else if (state.timeLeft <= 15) $hud.timer.classList.add('warning');
+}
+
+/* ============================================================
+   HUD
+   ============================================================ */
+function updateHUD() {
+  $hud.timer.textContent = state.timeLeft;
+  $hud.tokens.textContent = state.currentIndex + '/' + CONFIG.totalTokens;
+  $hud.score.textContent = state.score;
+  $progressFill.style.width = (state.currentIndex / CONFIG.totalTokens * 100) + '%';
+  updateTimerDisplay();
+}
+
+/* ============================================================
+   RENDER TOKEN
+   ============================================================ */
+function renderToken() {
+  if (state.currentIndex >= state.tokens.length) { endGame(); return; }
+  const item = state.tokens[state.currentIndex];
+  $tokenArea.innerHTML = '';
+  const token = document.createElement('div');
+  token.className = 'waste-token enter'; token.id = 'current-token';
+  token.innerHTML = `
+    <span class="token-emoji">${item.emoji}</span>
+    <span class="token-name">${item.name}</span>
+    <span class="token-hint">¡Arrastra al tacho correcto!</span>
+  `;
+  token.dataset.category = item.category;
+  token.addEventListener('touchstart', onDragStart, { passive: false });
+  token.addEventListener('mousedown', onDragStart);
+  $tokenArea.appendChild(token);
+}
+
+/* ============================================================
+   DRAG & DROP
+   ============================================================ */
+function onDragStart(e) {
+  if (!state.isPlaying || state.isDragging) return;
+  e.preventDefault();
+  const token = document.getElementById('current-token');
+  if (!token) return;
+  state.isDragging = true;
+  const pt = e.touches ? e.touches[0] : e;
+  const rect = token.getBoundingClientRect();
+  state.dragOffsetX = pt.clientX - rect.left;
+  state.dragOffsetY = pt.clientY - rect.top;
+
+  const ghost = token.cloneNode(true);
+  ghost.className = 'waste-token dragging drag-ghost'; ghost.id = 'drag-ghost';
+  ghost.style.width = rect.width+'px'; ghost.style.height = rect.height+'px';
+  ghost.style.left = rect.left+'px'; ghost.style.top = rect.top+'px';
+  document.body.appendChild(ghost);
+  state.activeGhost = ghost;
+  token.style.opacity = '0.2';
+
+  if (e.touches) {
+    document.addEventListener('touchmove', onDragMove, { passive: false });
+    document.addEventListener('touchend', onDragEnd);
+  } else {
+    document.addEventListener('mousemove', onDragMove);
+    document.addEventListener('mouseup', onDragEnd);
+  }
+}
+
+function onDragMove(e) {
+  if (!state.isDragging || !state.activeGhost) return;
+  e.preventDefault();
+  const pt = e.touches ? e.touches[0] : e;
+  state.activeGhost.style.left = (pt.clientX - state.dragOffsetX) + 'px';
+  state.activeGhost.style.top = (pt.clientY - state.dragOffsetY) + 'px';
+
+  const gr = state.activeGhost.getBoundingClientRect();
+  let bestBin = null, bestOverlap = 0;
+  $containers.forEach(bin => {
+    const br = bin.getBoundingClientRect();
+    const overlapX = Math.max(0, Math.min(gr.right, br.right) - Math.max(gr.left, br.left));
+    const overlapY = Math.max(0, Math.min(gr.bottom, br.bottom) - Math.max(gr.top, br.top));
+    const overlap = overlapX * overlapY;
+    if (overlap > bestOverlap) { bestOverlap = overlap; bestBin = bin; }
+    bin.classList.remove('drag-over');
+  });
+  if (bestBin && bestOverlap > 400) bestBin.classList.add('drag-over');
+}
+
+function onDragEnd(e) {
+  if (!state.isDragging) return;
+  document.removeEventListener('touchmove', onDragMove);
+  document.removeEventListener('touchend', onDragEnd);
+  document.removeEventListener('mousemove', onDragMove);
+  document.removeEventListener('mouseup', onDragEnd);
+
+  let droppedBin = null;
+  let bestOverlap = 0;
+  const gr = state.activeGhost.getBoundingClientRect();
+  $containers.forEach(bin => {
+    bin.classList.remove('drag-over');
+    const br = bin.getBoundingClientRect();
+    const overlapX = Math.max(0, Math.min(gr.right, br.right) - Math.max(gr.left, br.left));
+    const overlapY = Math.max(0, Math.min(gr.bottom, br.bottom) - Math.max(gr.top, br.top));
+    const overlap = overlapX * overlapY;
+    if (overlap > bestOverlap) { bestOverlap = overlap; droppedBin = bin; }
+  });
+  if (bestOverlap < 400) droppedBin = null;
+
+  if (state.activeGhost) { state.activeGhost.remove(); state.activeGhost = null; }
+  else { state.isDragging = false; return; }
+  state.isDragging = false;
+
+  const token = document.getElementById('current-token');
+  if (droppedBin && token) {
+    const isCorrect = token.dataset.category === droppedBin.dataset.category;
+    isCorrect ? handleCorrect(token, droppedBin) : handleWrong(token, droppedBin);
+  } else if (token) {
+    token.style.opacity = '1';
+  }
+}
+
+/* ============================================================
+   CORRECT / WRONG
+   ============================================================ */
+function handleCorrect(token, bin) {
+  state.score += CONFIG.correctPoints; state.correct++;
+  token.style.opacity = '1'; token.classList.remove('enter'); token.classList.add('correct-exit');
+  showFeedbackFlash('correct'); showScorePopup('+'+CONFIG.correctPoints, 'positive');
+  bin.classList.add('correct-flash'); setTimeout(() => bin.classList.remove('correct-flash'), 500);
+  advanceToken();
+}
+
+function handleWrong(token, bin) {
+  state.score += CONFIG.penaltyPoints; state.wrong++;
+  token.style.opacity = '1'; token.classList.remove('enter'); token.classList.add('wrong-exit');
+  showFeedbackFlash('wrong'); showScorePopup(CONFIG.penaltyPoints.toString(), 'negative');
+  bin.classList.add('wrong-flash'); setTimeout(() => bin.classList.remove('wrong-flash'), 400);
+  advanceToken();
+}
+
+function advanceToken() {
+  state.currentIndex++; updateHUD();
+  if (state.currentIndex >= CONFIG.totalTokens) setTimeout(() => endGame(), 600);
+  else setTimeout(() => renderToken(), 500);
+}
+
+/* ============================================================
+   FEEDBACK
+   ============================================================ */
+function showFeedbackFlash(type) {
+  const f = document.createElement('div'); f.className = 'feedback-flash '+type;
+  $tokenArea.appendChild(f); setTimeout(() => f.remove(), 600);
+}
+function showScorePopup(text, type) {
+  const p = document.createElement('div'); p.className = 'score-popup '+type;
+  p.textContent = text; p.style.top = '40%'; p.style.left = '50%';
+  p.style.transform = 'translateX(-50%)';
+  $tokenArea.appendChild(p); setTimeout(() => p.remove(), 800);
+}
+
+/* ============================================================
+   END GAME
+   ============================================================ */
+function endGame() {
+  state.isPlaying = false; clearInterval(state.timerInterval);
+  const pct = CONFIG.totalTokens > 0 ? (state.correct / CONFIG.totalTokens) * 100 : 0;
+  const $i = document.getElementById('results-icon');
+  const $t = document.getElementById('results-title');
+  const $m = document.getElementById('results-message');
+  $i.className = 'results-icon';
+
+  if (pct >= 80) {
+    $i.classList.add('excellent'); $i.textContent = '🌟';
+    $t.textContent = '¡Excelente!'; $t.style.color = 'var(--accent-green)';
+    $m.textContent = '¡Sos un campeón del reciclaje! El planeta te lo agradece.';
+  } else if (pct >= 50) {
+    $i.classList.add('good'); $i.textContent = '👏';
+    $t.textContent = '¡Muy bien!'; $t.style.color = '#60a5fa';
+    $m.textContent = '¡Vas muy bien! Seguí practicando para ser un experto.';
+  } else {
+    $i.classList.add('try-again'); $i.textContent = '💪';
+    $t.textContent = '¡Volvé a intentar!'; $t.style.color = '#f59e0b';
+    $m.textContent = '¡No te rindas! Cada vez vas a separar mejor.';
+  }
+
+  document.getElementById('stat-correct').textContent = state.correct;
+  document.getElementById('stat-wrong').textContent = state.wrong;
+  document.getElementById('stat-score').textContent = Math.max(0, state.score);
+  showScreen('results');
+}
+
+/* Prevent scroll while dragging */
+document.addEventListener('touchmove', function(e) {
+  if (state.isDragging) e.preventDefault();
+}, { passive: false });
+
+</script>
+</body>
+</html>

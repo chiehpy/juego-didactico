@@ -1,0 +1,35 @@
+# IDE / tools
+.claude/
+.playwright-mcp/
+
+# Screenshots temporales
+*.png
+*.jpg
+!juego/bin.png
+!docs/*.png
+!docs/*.jpg
+
+# Unity build (referencia, muy pesado)
+Ternium Separa/
+
+# Old prototype
+_old_prototype/
+
+# Docs - reference images and saved web pages (not needed in repo)
+docs/bin-svg.jpg
+docs/bin-transparent.png
+docs/bin-image.png
+docs/bin image
+docs/contenedores-colores-696x425.jpg
+docs/Trash container bin icon*
+
+# Version 2 jugadores (descartada)
+juego/2jugadores.html
+
+# Presupuesto
+Presupuesto_*
+
+# Misc
+node_modules/
+.DS_Store
+Thumbs.db
