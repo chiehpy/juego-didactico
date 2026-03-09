@@ -11,14 +11,17 @@
    CSS VARIABLES
    ============================================================ */
 :root {
-  --bg-primary: #0f1b2d;
-  --bg-gradient-start: #162544;
-  --bg-gradient-mid: #0f1b2d;
-  --bg-gradient-end: #0a1220;
+  --bg-primary: #22c55e;
+  --bg-secondary: #F7F7F7;
+  --bg-border: #E5E5E5;
 
-  --accent-green: #34d399;
-  --accent-lime: #a3e635;
-  --accent-sky: #38bdf8;
+  --accent-green: #58CC02;
+  --accent-green-dark: #58A700;
+  --accent-blue: #1CB0F6;
+  --accent-blue-dark: #1899D6;
+  --accent-red: #FF4B4B;
+  --accent-yellow: #FFC800;
+  --accent-orange: #FF9600;
 
   --bin-blue: #3b82f6;
   --bin-blue-dark: #2563eb;
@@ -29,12 +32,12 @@
   --bin-black: #4b5563;
   --bin-black-dark: #1f2937;
 
-  --text-primary: #f0f9ff;
-  --text-secondary: #7dd3fc;
-  --text-muted: #38bdf8aa;
+  --text-primary: #1A1A1A;
+  --text-secondary: #2D2D2D;
+  --text-muted: #2D2D2D;
 
-  --token-bg: rgba(255,255,255,0.07);
-  --token-border: rgba(255,255,255,0.12);
+  --token-bg: #FFFFFF;
+  --token-border: #E5E5E5;
 
   --font-display: 'Lilita One', cursive;
   --font-body: 'Outfit', sans-serif;
@@ -65,30 +68,15 @@ html, body {
 
 body {
   display: flex; justify-content: center; align-items: center;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(56,189,248,0.1) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(52,211,153,0.06) 0%, transparent 50%),
-    linear-gradient(170deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 40%, var(--bg-gradient-end) 100%);
+  background: var(--bg-primary);
 }
 
 /* ============================================================
    GAME WRAPPER
    ============================================================ */
 #game-wrapper {
-  width: 100%; max-width: 540px;
-  height: 100vh; max-height: 960px;
+  width: 100%; height: 100vh;
   position: relative; overflow: hidden;
-  padding: 0 24px;
-}
-@media (min-height: 961px) {
-  #game-wrapper { max-height: 100vh; }
-}
-/* Totem full-res: more generous margins */
-@media (min-width: 1080px) {
-  #game-wrapper { max-width: 900px; padding: 0 80px; }
-}
-@media (min-width: 1080px) and (min-height: 1920px) {
-  #game-wrapper { max-width: 1080px; padding: 0 100px; }
 }
 
 /* ============================================================
@@ -101,17 +89,26 @@ body {
   opacity: 0; pointer-events: none;
   transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
+.screen-panel {
+  position: absolute; inset: 90px 70px;
+  background: rgba(255, 250, 240, 0.88);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg);
+  border: none;
+  box-shadow: 0 0 60px rgba(0,0,0,0.5), 0 0 20px rgba(0,0,0,0.3);
+  z-index: 0;
+}
 .screen.active { opacity: 1; pointer-events: all; }
 
 /* ============================================================
    PARTICLES
    ============================================================ */
-.particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
-.particle { position: absolute; border-radius: 50%; opacity: 0.1; animation: floatP linear infinite; }
-@keyframes floatP {
-  0% { transform: translateY(100vh) rotate(0deg) scale(0.5); opacity: 0; }
-  10% { opacity: 0.1; } 90% { opacity: 0.1; }
-  100% { transform: translateY(-20vh) rotate(360deg) scale(1); opacity: 0; }
+.bg-mosaic {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background: url('logo-funes.png') repeat;
+  background-size: 180px 180px;
+  opacity: 1;
+  transform: rotate(0deg);
 }
 
 /* ============================================================
@@ -123,9 +120,9 @@ body {
   width: 100px; height: 100px; margin: 0 auto 16px;
   display: flex; align-items: center; justify-content: center;
   font-size: 64px;
-  background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(52,211,153,0.15));
+  background: linear-gradient(135deg, rgba(88,204,2,0.15), rgba(28,176,246,0.15));
   border-radius: 50%;
-  box-shadow: 0 0 40px rgba(56,189,248,0.2);
+  box-shadow: 0 0 40px rgba(88,204,2,0.2);
   animation: iconBob 3s ease-in-out infinite;
 }
 @keyframes iconBob {
@@ -136,9 +133,9 @@ body {
 .start-title {
   font-family: var(--font-display); font-size: clamp(44px, 11vw, 60px);
   text-align: center; line-height: 1; letter-spacing: -1px;
-  background: linear-gradient(135deg, #fff 0%, var(--accent-sky) 50%, var(--accent-green) 100%);
+  background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-blue) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  filter: drop-shadow(0 4px 20px rgba(56,189,248,0.3)); margin-bottom: 4px;
+  filter: drop-shadow(0 2px 8px rgba(88,204,2,0.2)); margin-bottom: 4px;
 }
 .start-subtitle {
   font-family: var(--font-display); font-size: clamp(20px, 5vw, 26px);
@@ -149,50 +146,49 @@ body {
   font-size: 18px; color: var(--text-muted); text-align: center;
   max-width: 340px; line-height: 1.7; margin-bottom: 48px; z-index: 1; position: relative;
 }
-.start-instructions strong { color: var(--accent-sky); font-weight: 600; }
+.start-instructions strong { color: var(--accent-green); font-weight: 600; }
 
 .btn-play {
   position: relative; z-index: 1; width: 240px; height: 76px; border: none;
   border-radius: var(--radius-xl); font-family: var(--font-display); font-size: 32px;
   letter-spacing: 2px; color: #fff;
-  background: linear-gradient(135deg, var(--accent-sky) 0%, var(--accent-green) 100%);
+  background: var(--accent-green);
   cursor: pointer;
-  box-shadow: 0 4px 24px rgba(56,189,248,0.4), 0 0 60px rgba(56,189,248,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
-  transition: transform 0.2s, box-shadow 0.2s;
-  animation: pulseBtn 2.5s ease-in-out infinite;
+  box-shadow: 0 6px 0 var(--accent-green-dark);
+  transition: transform 0.1s, box-shadow 0.1s;
 }
-.btn-play:active { transform: scale(0.95); box-shadow: 0 2px 12px rgba(56,189,248,0.3); }
-@keyframes pulseBtn {
-  0%, 100% { box-shadow: 0 4px 24px rgba(56,189,248,0.4), 0 0 60px rgba(56,189,248,0.15); }
-  50% { box-shadow: 0 4px 32px rgba(56,189,248,0.6), 0 0 80px rgba(56,189,248,0.25); }
-}
+.btn-play:active { transform: translateY(6px); box-shadow: 0 0 0 var(--accent-green-dark); }
 
 /* ============================================================
    GAME SCREEN
    ============================================================ */
-#screen-game { justify-content: flex-start; padding: 20px 0 20px; }
+#screen-game { justify-content: flex-start; padding: 103px 83px 103px; overflow: hidden; }
 
 .game-hud {
-  width: 100%; display: flex; justify-content: space-between; align-items: center;
-  padding: 0 4px; margin-bottom: 10px; z-index: 10;
+  width: 100%; min-height: 15vh;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 clamp(10px, 3vw, 30px); margin-bottom: 10px; z-index: 10;
+  flex-shrink: 0;
 }
-.hud-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.hud-label { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 600; }
-.hud-value { font-family: var(--font-display); font-size: 38px; line-height: 1; color: var(--text-primary); }
-.hud-value.timer { color: var(--accent-sky); transition: color 0.3s; }
-.hud-value.timer.warning { color: #f59e0b; }
-.hud-value.timer.danger { color: #ef4444; animation: timerPulse 0.5s ease-in-out infinite; }
+.hud-logo { height: 80%; max-height: 12vh; object-fit: contain; flex-shrink: 0; }
+.hud-item { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: clamp(80px, 15vw, 120px); }
+.hud-fichas { display: flex; flex-direction: column; align-items: center; gap: 2px; z-index: 10; margin-top: -4px; }
+.hud-label { font-size: clamp(12px, 1.5vh, 16px); text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); font-weight: 600; }
+.hud-value { font-family: var(--font-display); font-size: clamp(52px, 7vh, 72px); line-height: 1; color: var(--text-primary); }
+.hud-value.timer { color: var(--accent-blue); transition: color 0.3s; }
+.hud-value.timer.warning { color: var(--accent-orange); }
+.hud-value.timer.danger { color: var(--accent-red); animation: timerPulse 0.5s ease-in-out infinite; }
 @keyframes timerPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
 .hud-value.score { color: var(--accent-green); }
+.hud-label { color: var(--text-muted); }
 
 .progress-bar-track {
-  width: 100%; height: 8px; background: rgba(255,255,255,0.06);
+  width: 100%; height: 8px; background: var(--bg-border);
   border-radius: 4px; margin-bottom: 12px; overflow: hidden; z-index: 10;
 }
 .progress-bar-fill {
-  height: 100%; background: linear-gradient(90deg, var(--accent-sky), var(--accent-green));
+  height: 100%; background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
   border-radius: 4px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
-  box-shadow: 0 0 12px rgba(56,189,248,0.5);
 }
 
 /* Token area */
@@ -204,22 +200,25 @@ body {
 
 /* Waste token */
 .waste-token {
-  width: clamp(200px, 50vw, 340px); height: clamp(200px, 50vw, 340px);
-  background: var(--token-bg); border: 2.5px solid var(--token-border);
+  width: clamp(170px, 42vw, 290px); height: clamp(170px, 42vw, 290px);
+  background: var(--token-bg); border: 2px solid var(--token-border);
   border-radius: var(--radius-lg);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
   cursor: grab; transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
   position: relative; z-index: 50;
 }
 .waste-token:active { cursor: grabbing; }
 .waste-token.dragging {
   transform: scale(1.08);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 30px rgba(56,189,248,0.2);
-  border-color: var(--accent-sky); z-index: 100;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  border-color: var(--accent-blue); z-index: 100;
 }
-.waste-token .token-emoji { font-size: clamp(64px, 16vw, 80px); line-height: 1; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)); }
+.waste-token .token-emoji { font-size: clamp(54px, 14vw, 68px); line-height: 1; }
+.waste-token .token-icon { width: clamp(64px, 16vw, 90px); height: auto; pointer-events: none; }
+.waste-token .token-icon.icon-md { width: clamp(83px, 20.8vw, 117px); }
+.waste-token .token-icon.icon-lg { width: clamp(100px, 25vw, 140px); }
+.waste-token .token-icon.icon-outlined, .drag-ghost.ghost-outlined img { filter: drop-shadow(2px 0 0 #000) drop-shadow(-2px 0 0 #000) drop-shadow(0 2px 0 #000) drop-shadow(0 -2px 0 #000); }
 .waste-token .token-name { font-size: clamp(17px, 4.5vw, 22px); font-weight: 700; text-align: center; color: var(--text-primary); padding: 0 12px; line-height: 1.3; }
 .waste-token .token-hint { font-size: clamp(13px, 3.5vw, 16px); color: var(--text-muted); font-weight: 400; }
 
@@ -243,23 +242,23 @@ body {
 
 /* Score popup */
 .score-popup { position:absolute; font-family:var(--font-display); font-size:52px; pointer-events:none; z-index:300; animation:scoreFloat 0.8s cubic-bezier(0.4,0,0.2,1) forwards; }
-.score-popup.positive { color:var(--accent-green); text-shadow:0 0 20px rgba(52,211,153,0.6); }
-.score-popup.negative { color:#ef4444; text-shadow:0 0 20px rgba(239,68,68,0.6); }
+.score-popup.positive { color:var(--accent-green); text-shadow:0 0 10px rgba(88,204,2,0.3); }
+.score-popup.negative { color:var(--accent-red); text-shadow:0 0 10px rgba(255,75,75,0.3); }
 @keyframes scoreFloat { 0%{opacity:1;transform:translateY(0) scale(0.5)} 30%{transform:translateY(-20px) scale(1.2)} 100%{opacity:0;transform:translateY(-80px) scale(0.8)} }
 
 /* ============================================================
    CONTAINERS (TRASH BINS)
    ============================================================ */
-.containers-area { width: 100%; z-index: 10; padding-top: 8px; min-height: 15vh; display: flex; align-items: center; justify-content: center; }
+.containers-area { width: 100%; z-index: 10; padding: 8px 0 6px; display: flex; align-items: flex-end; justify-content: center; flex-shrink: 0; }
 
 .containers-row {
-  display: flex; justify-content: center; gap: 10px; margin-bottom: 0;
+  display: flex; justify-content: center; gap: clamp(4px, 1.2vw, 12px); margin-bottom: 0; width: 100%;
 }
 
 .container-bin {
-  flex: 1; max-width: 23%;
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  padding: 16px 6px 14px;
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; align-items: center; gap: clamp(4px, 1vh, 10px);
+  padding: clamp(12px, 2.5vh, 28px) clamp(6px, 1.5vw, 16px) clamp(10px, 2.2vh, 24px);
   border-radius: var(--radius-md);
   border: 2.5px solid transparent;
   transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
@@ -267,7 +266,7 @@ body {
 }
 
 .container-bin .bin-img {
-  width: clamp(80px, 10vh, 140px); height: auto; transition: transform 0.2s;
+  width: 100%; max-width: clamp(70px, 12vw, 130px); height: auto; transition: transform 0.2s;
   pointer-events: none;
 }
 
@@ -278,19 +277,20 @@ body {
 .bin-black .bin-img { filter: saturate(0) brightness(0.7); }
 
 .container-bin .bin-label {
-  font-size: clamp(12px, 1.5vh, 16px); font-weight: 700; text-transform: uppercase;
+  font-size: clamp(14px, 1.8vh, 20px); font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.5px; text-align: center; line-height: 1.2;
 }
 
 /* Bin color themes */
-.bin-blue { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.2); }
-.bin-yellow { background: rgba(234,179,8,0.08); border-color: rgba(234,179,8,0.2); }
-.bin-green { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.2); }
-.bin-black { background: rgba(75,85,99,0.12); border-color: rgba(75,85,99,0.25); }
-.container-bin .bin-label { color: #ffffff; }
+.bin-blue { background: rgba(59,130,246,0.18); border-color: rgba(59,130,246,0.4); }
+.bin-yellow { background: rgba(234,179,8,0.18); border-color: rgba(234,179,8,0.4); }
+.bin-green { background: rgba(34,197,94,0.18); border-color: rgba(34,197,94,0.4); }
+.bin-black { background: rgba(75,85,99,0.18); border-color: rgba(75,85,99,0.4); }
+.container-bin .bin-label { color: var(--text-primary); }
 
 /* Drag over */
-.container-bin.drag-over { transform: scale(1.1); }
+.container-bin.drag-over { transform: scale(1.1); animation: binShake 0.4s ease-in-out infinite; }
+@keyframes binShake { 0%,100%{transform:scale(1.1) rotate(0deg)} 25%{transform:scale(1.1) rotate(-3deg)} 75%{transform:scale(1.1) rotate(3deg)} }
 .container-bin.drag-over.bin-blue { border-color: var(--bin-blue); box-shadow: 0 0 28px rgba(59,130,246,0.4); }
 .container-bin.drag-over.bin-yellow { border-color: var(--bin-yellow); box-shadow: 0 0 28px rgba(234,179,8,0.4); }
 .container-bin.drag-over.bin-green { border-color: var(--bin-green); box-shadow: 0 0 28px rgba(34,197,94,0.4); }
@@ -313,9 +313,9 @@ body {
   font-size: 58px; margin-bottom: 8px;
   animation: resultsBounce 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; opacity: 0;
 }
-.results-icon.excellent { background: linear-gradient(135deg,rgba(52,211,153,0.2),rgba(163,230,53,0.2)); box-shadow:0 0 40px rgba(52,211,153,0.3); }
-.results-icon.good { background: linear-gradient(135deg,rgba(56,189,248,0.2),rgba(52,211,153,0.2)); box-shadow:0 0 40px rgba(56,189,248,0.3); }
-.results-icon.try-again { background: linear-gradient(135deg,rgba(245,158,11,0.2),rgba(234,179,8,0.2)); box-shadow:0 0 40px rgba(245,158,11,0.3); }
+.results-icon.excellent { background: rgba(88,204,2,0.12); box-shadow:0 4px 20px rgba(88,204,2,0.15); }
+.results-icon.good { background: rgba(28,176,246,0.12); box-shadow:0 4px 20px rgba(28,176,246,0.15); }
+.results-icon.try-again { background: rgba(255,200,0,0.15); box-shadow:0 4px 20px rgba(255,200,0,0.15); }
 @keyframes resultsBounce { 0%{opacity:0;transform:scale(0)} 60%{transform:scale(1.15)} 100%{opacity:1;transform:scale(1)} }
 
 .results-title {
@@ -337,24 +337,24 @@ body {
 
 .stat-card {
   display: flex; flex-direction: column; align-items: center; gap: 4px;
-  padding: 16px 22px; background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-md);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  padding: 16px 22px; background: var(--bg-secondary);
+  border: 1px solid var(--bg-border); border-radius: var(--radius-md);
 }
 .stat-value { font-family: var(--font-display); font-size: 38px; line-height: 1; }
 .stat-value.green { color: var(--accent-green); }
-.stat-value.red { color: #ef4444; }
-.stat-value.blue { color: #60a5fa; }
+.stat-value.red { color: var(--accent-red); }
+.stat-value.blue { color: var(--accent-blue); }
 .stat-label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
 
 .btn-replay {
-  width: 240px; height: 68px; border: 2.5px solid var(--accent-sky);
-  border-radius: var(--radius-xl); background: transparent;
+  width: 240px; height: 68px; border: none;
+  border-radius: var(--radius-xl); background: var(--accent-blue);
   font-family: var(--font-display); font-size: 24px; letter-spacing: 1px;
-  color: var(--accent-sky); cursor: pointer; transition: all 0.25s;
+  color: #fff; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s;
+  box-shadow: 0 6px 0 var(--accent-blue-dark);
   animation: rSlide 0.5s cubic-bezier(0.4,0,0.2,1) 0.5s forwards; opacity: 0; margin-top: 12px;
 }
-.btn-replay:active { background: var(--accent-sky); color: var(--bg-primary); transform: scale(0.95); }
+.btn-replay:active { transform: translateY(6px); box-shadow: 0 0 0 var(--accent-blue-dark); }
 
 /* Drag ghost */
 .drag-ghost { position: fixed; pointer-events: none; z-index: 9999; transition: none; }
@@ -368,10 +368,11 @@ a, button, .container-bin { touch-action: manipulation; }
 <body>
 
 <div id="game-wrapper">
-  <div class="particles" id="particles"></div>
+  <div class="bg-mosaic"></div>
 
   <!-- ======================== START SCREEN ======================== -->
   <div class="screen active" id="screen-start">
+    <div class="screen-panel"></div>
     <div class="start-logo">
       <div class="start-icon">♻️</div>
     </div>
@@ -386,23 +387,24 @@ a, button, .container-bin { touch-action: manipulation; }
 
   <!-- ======================== GAME SCREEN ======================== -->
   <div class="screen" id="screen-game">
+    <div class="screen-panel"></div>
     <div class="game-hud">
       <div class="hud-item">
         <span class="hud-label">Tiempo</span>
         <span class="hud-value timer" id="hud-timer">60</span>
       </div>
-      <div class="hud-item">
-        <span class="hud-label">Fichas</span>
-        <span class="hud-value" id="hud-tokens">0/20</span>
-      </div>
+      <img class="hud-logo" src="logo-funes.png" alt="Logo Gobierno de Funes">
       <div class="hud-item">
         <span class="hud-label">Puntaje</span>
         <span class="hud-value score" id="hud-score">0</span>
       </div>
     </div>
-
     <div class="progress-bar-track">
       <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="hud-fichas">
+      <span class="hud-label">Fichas</span>
+      <span class="hud-value" id="hud-tokens">0/20</span>
     </div>
 
     <div class="token-area" id="token-area"></div>
@@ -431,7 +433,7 @@ a, button, .container-bin { touch-action: manipulation; }
 
         <!-- NEGRO - No Reciclable -->
         <div class="container-bin bin-black" data-category="trash">
-          <img class="bin-img" src="bin.png" alt="No Reciclable">
+          <img class="bin-img" src="bin-nopet.png" alt="No Reciclable">
           <span class="bin-label">No<br>Reciclable</span>
         </div>
 
@@ -441,6 +443,7 @@ a, button, .container-bin { touch-action: manipulation; }
 
   <!-- ======================== RESULTS SCREEN ======================== -->
   <div class="screen" id="screen-results">
+    <div class="screen-panel"></div>
     <div class="results-icon" id="results-icon"></div>
     <h2 class="results-title" id="results-title"></h2>
     <p class="results-message" id="results-message"></p>
@@ -478,38 +481,32 @@ const CONFIG = {
    ============================================================ */
 const WASTE_ITEMS = [
   // AZUL - Papel y Cartón
-  { name: 'Periódico',           emoji: '📰', category: 'paper' },
-  { name: 'Caja de cartón',      emoji: '📦', category: 'paper' },
-  { name: 'Hoja de papel',       emoji: '📄', category: 'paper' },
-  { name: 'Revista',             emoji: '📖', category: 'paper' },
-  { name: 'Rollo de cartón',     emoji: '🧻', category: 'paper' },
-  { name: 'Cuaderno viejo',      emoji: '📓', category: 'paper' },
-  { name: 'Sobre de carta',      emoji: '✉️', category: 'paper' },
+  { name: 'Periódico',           emoji: '📰', icon: 'icons/newspaper.png', category: 'paper' },
+  { name: 'Caja de cartón',      emoji: '📦', icon: 'icons/open-box.png', category: 'paper' },
+  { name: 'Hoja de papel',       emoji: '📄', icon: 'icons/paper.png', category: 'paper' },
+  { name: 'Libro',               emoji: '📖', icon: 'icons/book.png', category: 'paper' },
+  { name: 'Rollo de cartón',     emoji: '🧻', icon: 'icons/paper-roll.png', iconClass: 'icon-md icon-outlined', category: 'paper' },
+  { name: 'Cuaderno viejo',      emoji: '📓', icon: 'icons/notebook.png', category: 'paper' },
+  { name: 'Sobre de carta',      emoji: '✉️', icon: 'icons/email.png', category: 'paper' },
+  { name: 'Cartón de huevos',   emoji: '🥚', icon: 'icons/egg-carton.png', category: 'paper' },
 
   // AMARILLO - Plásticos y Latas
-  { name: 'Botella plástica',    emoji: '🧴', category: 'plastic' },
-  { name: 'Lata de gaseosa',     emoji: '🥫', category: 'plastic' },
-  { name: 'Bolsa plástica',      emoji: '🛍️', category: 'plastic' },
-  { name: 'Envase de yogurt',    emoji: '🥛', category: 'plastic' },
-  { name: 'Tapa plástica',       emoji: '⚙️', category: 'plastic' },
-  { name: 'Envase de shampoo',   emoji: '🧴', category: 'plastic' },
-  { name: 'Lata de atún',        emoji: '🥫', category: 'plastic' },
+  { name: 'Botella plástica',    emoji: '🧴', icon: 'icons/water-bottle.png', category: 'plastic' },
+  { name: 'Lata de gaseosa',     emoji: '🥫', icon: 'icons/soda-can.png', category: 'plastic' },
+  { name: 'Bolsa plástica',      emoji: '🛍️', icon: 'icons/poly-bag.png', category: 'plastic' },
+  { name: 'Envase de shampoo',   emoji: '🧴', icon: 'icons/shampoo.png', category: 'plastic' },
+  { name: 'Lata de atún',        emoji: '🥫', icon: 'icons/tuna-can.png', category: 'plastic' },
 
   // VERDE - Vidrio
-  { name: 'Botella de vidrio',   emoji: '🍾', category: 'glass' },
-  { name: 'Frasco de mermelada', emoji: '🫙', category: 'glass' },
-  { name: 'Vaso de vidrio roto', emoji: '🥃', category: 'glass' },
-  { name: 'Botella de jugo',     emoji: '🍶', category: 'glass' },
-  { name: 'Frasco de salsa',     emoji: '🫙', category: 'glass' },
+  { name: 'Botella de vidrio',   emoji: '🍾', icon: 'icons/champagne.png', category: 'glass' },
+  { name: 'Frasco de vidrio',    emoji: '🫙', icon: 'icons/frasco.png', iconClass: 'icon-lg', category: 'glass' },
+  { name: 'Vaso de vidrio roto', emoji: '🥃', icon: 'icons/broken-glass.png', category: 'glass' },
 
   // NEGRO - No Reciclable
-  { name: 'Pañal usado',         emoji: '🧷', category: 'trash' },
-  { name: 'Chicle masticado',    emoji: '🫧', category: 'trash' },
-  { name: 'Servilleta sucia',    emoji: '🧻', category: 'trash' },
-  { name: 'Esponja vieja',       emoji: '🧽', category: 'trash' },
-  { name: 'Cepillo de dientes',  emoji: '🪥', category: 'trash' },
-  { name: 'Sticker pegado',      emoji: '🏷️', category: 'trash' },
-  { name: 'Globo desinflado',    emoji: '🎈', category: 'trash' },
+  { name: 'Cáscara de banana',   emoji: '🍌', icon: 'icons/banana.png', category: 'trash' },
+  { name: 'Restos de comida',   emoji: '🍗', icon: 'icons/leftover.png', category: 'trash' },
+  { name: 'Esponja vieja',       emoji: '🧽', icon: 'icons/sponge.png', category: 'trash' },
+  { name: 'Cepillo de dientes',  emoji: '🪥', icon: 'icons/toothbrush.png', category: 'trash' },
 ];
 
 /* ============================================================
@@ -541,21 +538,6 @@ const $containers = document.querySelectorAll('.container-bin');
 /* ============================================================
    PARTICLES
    ============================================================ */
-(function createParticles() {
-  const c = document.getElementById('particles');
-  const colors = ['#38bdf8','#34d399','#a3e635','#3b82f6','#eab308','#22c55e'];
-  for (let i = 0; i < 18; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const s = 6 + Math.random() * 20;
-    p.style.width = s+'px'; p.style.height = s+'px';
-    p.style.left = Math.random()*100+'%';
-    p.style.background = colors[Math.floor(Math.random()*colors.length)];
-    p.style.animationDuration = (12+Math.random()*18)+'s';
-    p.style.animationDelay = (Math.random()*15)+'s';
-    c.appendChild(p);
-  }
-})();
 
 /* ============================================================
    SCREEN MANAGEMENT
@@ -624,8 +606,12 @@ function renderToken() {
   $tokenArea.innerHTML = '';
   const token = document.createElement('div');
   token.className = 'waste-token enter'; token.id = 'current-token';
+  const iconCls = item.iconClass ? ' ' + item.iconClass : '';
+  const visual = item.icon
+    ? `<img class="token-icon${iconCls}" src="${item.icon}" alt="${item.name}">`
+    : `<span class="token-emoji">${item.emoji}</span>`;
   token.innerHTML = `
-    <span class="token-emoji">${item.emoji}</span>
+    ${visual}
     <span class="token-name">${item.name}</span>
     <span class="token-hint">¡Arrastra al tacho correcto!</span>
   `;
@@ -649,13 +635,30 @@ function onDragStart(e) {
   state.dragOffsetX = pt.clientX - rect.left;
   state.dragOffsetY = pt.clientY - rect.top;
 
-  const ghost = token.cloneNode(true);
-  ghost.className = 'waste-token dragging drag-ghost'; ghost.id = 'drag-ghost';
-  ghost.style.width = rect.width+'px'; ghost.style.height = rect.height+'px';
-  ghost.style.left = rect.left+'px'; ghost.style.top = rect.top+'px';
+  const visualEl = token.querySelector('.token-icon') || token.querySelector('.token-emoji');
+  const visualRect = visualEl.getBoundingClientRect();
+  const ghost = document.createElement('div');
+  ghost.className = 'drag-ghost'; ghost.id = 'drag-ghost';
+  if (visualEl.classList.contains('icon-outlined')) ghost.classList.add('ghost-outlined');
+  ghost.style.width = visualRect.width+'px'; ghost.style.height = visualRect.height+'px';
+  ghost.style.left = visualRect.left+'px'; ghost.style.top = visualRect.top+'px';
+  ghost.style.filter = 'drop-shadow(0 0 12px rgba(0,0,0,0.5)) drop-shadow(0 0 24px rgba(0,0,0,0.25))';
+  ghost.style.transform = 'scale(1.2)';
+  if (visualEl.classList.contains('token-icon')) {
+    const img = document.createElement('img');
+    img.src = visualEl.src; img.style.width = '100%'; img.style.height = '100%';
+    ghost.appendChild(img);
+  } else {
+    ghost.style.fontSize = getComputedStyle(visualEl).fontSize;
+    ghost.style.lineHeight = '1';
+    ghost.textContent = visualEl.textContent;
+  }
+  state.dragOffsetX = pt.clientX - visualRect.left;
+  state.dragOffsetY = pt.clientY - visualRect.top;
   document.body.appendChild(ghost);
   state.activeGhost = ghost;
-  token.style.opacity = '0.2';
+  token.classList.remove('enter');
+  token.style.opacity = '0';
 
   if (e.touches) {
     document.addEventListener('touchmove', onDragMove, { passive: false });
@@ -775,11 +778,11 @@ function endGame() {
     $m.textContent = '¡Sos un campeón del reciclaje! El planeta te lo agradece.';
   } else if (pct >= 50) {
     $i.classList.add('good'); $i.textContent = '👏';
-    $t.textContent = '¡Muy bien!'; $t.style.color = '#60a5fa';
+    $t.textContent = '¡Muy bien!'; $t.style.color = 'var(--accent-blue)';
     $m.textContent = '¡Vas muy bien! Seguí practicando para ser un experto.';
   } else {
     $i.classList.add('try-again'); $i.textContent = '💪';
-    $t.textContent = '¡Volvé a intentar!'; $t.style.color = '#f59e0b';
+    $t.textContent = '¡Volvé a intentar!'; $t.style.color = 'var(--accent-orange)';
     $m.textContent = '¡No te rindas! Cada vez vas a separar mejor.';
   }
 

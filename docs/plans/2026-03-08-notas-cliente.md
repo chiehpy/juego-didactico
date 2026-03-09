@@ -14,12 +14,23 @@
 
 6. **1 solo logo en pantalla de juego** — Reducir logos visibles durante la partida a uno solo.
 
-7. **Idle: video loop** — Cuando nadie juega, mostrar video en loop del Intendente con patrocinio y toda la info institucional.
+7. **Idle: video loop** *(BLOQUEADO - falta video)* — Cuando nadie juega, mostrar video en loop del Intendente con patrocinio y toda la info institucional.
+   - **Implementacion**: Nueva pantalla (`screen-idle`) con `<video loop autoplay>`. Si nadie toca por X segundos, se muestra. Al tocar, vuelve al inicio.
+   - **Es funcional en el proyecto actual**, no requiere cambios en lo existente.
 
-7.1. **Post-juego: video patrocinio** — Al terminar la sesion de juego, mostrar video de patrocinio o mensaje de "felicitaciones por jugar".
+7.1. **Post-juego: video patrocinio** *(BLOQUEADO - falta video)* — Al terminar la sesion de juego, mostrar video de patrocinio o mensaje de "felicitaciones por jugar".
+   - **Implementacion**: Nueva pantalla (`screen-patrocinio`) con `<video>` que al terminar (o al tocar) avanza al idle.
+   - **Es funcional en el proyecto actual**, no requiere cambios en lo existente.
+
+   **Flujo completo con videos:**
+   ```
+   [Video Idle (loop)] --toca--> [Inicio] --jugar--> [Juego] --termina--> [Resultados] --timeout--> [Video Patrocinio] --termina--> [Video Idle (loop)]
+   ```
 
 8. **Agrandar figuras interactivas** — Las fichas/tokens de residuos deben ser mas grandes para mejor visibilidad y touch.
 
 9. **El juego es Touchscreen** — Confirmar y optimizar para uso exclusivo con pantalla tactil (sin mouse/teclado).
 
 10. **Fondo personalizado con branding** — Fondo custom con branding del cliente, resolucion 1080x1920.
+
+11. **Empaquetar como .exe** *(ULTIMO PASO)* — Empaquetar el juego con Electron para generar un .exe independiente. El codigo queda protegido y no accesible como archivos sueltos. Se abre fullscreen directo. Hacer esto al final cuando todo lo demas este listo.

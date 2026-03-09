@@ -7,17 +7,19 @@
 - ~~**2 Jugadores** (`juego/2jugadores.html`)~~ — **DESCARTADA**. Solo se usa version 1 jugador.
 
 ### Lo que ya funciona
-- Drag & drop con soporte touch + mouse
-- 4 categorías de residuos: Azul (Papel), Amarillo (Plásticos), Verde (Vidrio), Negro (No Reciclable)
+- Drag & drop con soporte touch + mouse (deteccion por overlap-area)
+- 4 categorias de residuos: Azul (Papel), Amarillo (Plasticos), Verde (Vidrio), Negro (No Reciclable)
 - Imagen real de tacho (`bin.png`) recolorizada con CSS filters para los 4 colores
+- Tacho negro usa `bin-nopet.png` (sin simbolo PET)
 - 20 fichas por partida, 60 segundos, +1 acierto / -1 error (configurable en CONFIG)
 - 3 pantallas: Inicio → Juego → Resultados
-- Animaciones: entrada/salida de tokens, flash correcto/incorrecto, popup de puntaje, timer warning
-- Contenido kid-friendly (público objetivo: niños)
-- Labels blancos en todos los tachos
-
-### ~~Versión 2 Jugadores~~ (DESCARTADA)
-> Esta version ya no se usa. El proyecto continua solo con 1 jugador en totem vertical.
+- Animaciones: entrada/salida de tokens, flash correcto/incorrecto, popup de puntaje, timer warning, shake en bins
+- Paleta de colores ludica estilo Duolingo (fondo verde, panel crema, colores brillantes)
+- Iconos PNG de residuos (Flaticon) con sistema de sizing (`icon-md`, `icon-lg`, `icon-outlined`)
+- Panel contenedor con glow negro y fondo mosaico con logo del Gobierno de Funes
+- HUD con logo centrado, Tiempo y Puntaje a los lados, Fichas debajo de progress bar
+- Game wrapper fullscreen (100% del body)
+- Contenido kid-friendly (publico objetivo: ninos)
 
 ### Filtros CSS de los tachos (bin.png base verde)
 | Tacho     | Filtro CSS |
@@ -25,31 +27,42 @@
 | Azul      | `hue-rotate(60deg) saturate(1.5) brightness(1.1)` |
 | Amarillo  | `saturate(0) sepia(1) hue-rotate(15deg) saturate(5) brightness(1.3)` |
 | Verde     | `none` (color original) |
-| Negro     | `saturate(0) brightness(0.7)` |
+| Negro     | `saturate(0) brightness(0.7)` (usa `bin-nopet.png`) |
+
+### Items de residuos actuales (20)
+| Categoria | Items |
+|-----------|-------|
+| Papel (8) | Periodico, Caja de carton, Hoja de papel, Libro, Rollo de carton, Cuaderno viejo, Sobre de carta, Carton de huevos |
+| Plastico (5) | Botella plastica, Lata de gaseosa, Bolsa plastica, Envase de shampoo, Lata de atun |
+| Vidrio (3) | Botella de vidrio, Frasco de vidrio, Vaso de vidrio roto |
+| No Reciclable (4) | Cascara de banana, Restos de comida, Esponja vieja, Cepillo de dientes |
 
 ---
 
 ## Pendientes / A Implementar
 
-### Alta Prioridad
-- [ ] Aplicar efecto shake de hover-drag a la versión 1 jugador (ya está en 2 jugadores)
-- [ ] Mejorar emojis/iconos de residuos — usar representaciones más realistas de basura cotidiana
-- [ ] Testing completo de versión 2 jugadores en pantalla táctil real
+### Iconos faltantes
+- [ ] Envase de yogurt (plastico)
+- [ ] Tapa plastica (plastico)
+- [ ] Botella de jugo (vidrio)
+- [ ] Panal usado (no reciclable)
+- [ ] Servilleta sucia (no reciclable)
+- [ ] Sticker pegado (no reciclable)
 
-### Media Prioridad
-- [ ] Soporte orientación landscape en versión 1 jugador
+### Bloqueado (esperando assets/definicion del cliente)
+- [ ] Sistema de ranking — Esperando definicion del cliente
+- [ ] Video idle loop — Esperando video del Intendente/patrocinio
+- [ ] Video post-juego — Esperando video de patrocinio
+- [ ] Fondo personalizado branding 1080x1920 — Esperando asset
+
+### Por hacer
+- [ ] 1 solo logo en pantalla de juego
+- [ ] Optimizar para touchscreen (parcialmente hecho)
 - [ ] Agregar sonidos (acierto, error, fin de juego, countdown)
-- [ ] Animaciones adicionales (confetti al ganar, partículas de fondo, efectos de entrada a pantallas)
-- [ ] Pantalla de instrucciones/tutorial antes de empezar
-- [ ] Ajustes visuales después de comparar lado a lado con el Ternium Separa original
+- [ ] Pantalla de instrucciones/tutorial
 
-### Baja Prioridad / Futuro
-- [ ] Sistema de niveles o dificultad progresiva
-- [ ] Más categorías de residuos (orgánico, electrónico, etc.)
-- [ ] Tabla de puntajes / leaderboard local
-- [ ] Modo práctica sin timer
-- [ ] Personalización visual (logos corporativos, colores de marca)
-- [ ] Exportar como PWA para instalar en totem sin navegador visible
+### Ultimo paso
+- [ ] Empaquetar como .exe con Electron
 
 ---
 
@@ -57,20 +70,22 @@
 ```
 Ternium Separa V3/
 ├── juego/
-│   ├── index.html          # Versión 1 jugador (portrait)
-│   ├── 2jugadores.html     # Versión 2 jugadores (landscape)
-│   └── bin.png             # Imagen del tacho (verde, se recoloriza con CSS)
+│   ├── index.html          # Version 1 jugador (portrait) - archivo principal
+│   ├── bin.png             # Imagen del tacho (verde, se recoloriza con CSS)
+│   ├── bin-nopet.png       # Imagen del tacho sin simbolo PET (para negro)
+│   ├── logo-funes.png      # Logo Gobierno de Funes (HUD + mosaico fondo)
+│   └── icons/              # Iconos PNG de residuos (Flaticon)
 ├── docs/
-│   ├── plans/              # Documentos de diseño
-│   ├── bin-image.png       # Imagen original del tacho
-│   ├── contenedores-colores-696x425.jpg  # Referencia visual
-│   └── objetivos-y-pendientes.md         # Este archivo
-├── Ternium Separa/         # Build original Unity (referencia)
-└── _old_prototype/         # Primer prototipo (5 tachos, descartado)
+│   ├── plans/              # Documentos de diseno y changelog
+│   ├── icons/              # Iconos originales descargados
+│   └── objetivos-y-pendientes.md  # Este archivo
+├── Ternium Separa/         # Build original Unity (referencia, gitignored)
+└── _old_prototype/         # Primer prototipo (descartado, gitignored)
 ```
 
 ## Tech Stack
 - HTML5 / CSS3 / JavaScript vanilla (sin dependencias)
 - Google Fonts: Lilita One + Outfit
 - Servidor local: `npx http-server -p 8765` desde carpeta `juego/`
-- Imágenes: PNG con fondo transparente + CSS filters para recolorizar
+- Imagenes: PNG con fondo transparente + CSS filters para recolorizar
+- Iconos: PNG de Flaticon con sistema de clases CSS para sizing
